@@ -56,7 +56,7 @@ def mutate_signal(file_path, index, value):
 def create_hardware_file(file_path):
     initial_state_values = [1, 2, 3, 4]
     initial_control_values = [5, 6, 7, 8]
-    initial_signal_values = [0, 0]
+    initial_signal_values = [1, 1]
     write_hardware_state(file_path, initial_state_values, initial_control_values, initial_signal_values)
 
 def main():
