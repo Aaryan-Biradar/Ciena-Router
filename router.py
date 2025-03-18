@@ -36,10 +36,58 @@ def main():
 
         # Write Your Code Here Start
 
+        if t % 10 == 0:
+            # Swap state values at indices 1 and 2 (1-indexed)
+            state_values[0], state_values[1] = state_values[1], state_values[0]
+            # Write the updated state values back to the hardware file
+            write_hardware_state(file_path, state_values, control_values, signal_values)
+            history.append(str(t) + " swap " + str(state_values[0]) + " " + str(state_values[1]))
+
+        control_values[signal_values[0] - 1] = signal_values[1]
+        write_hardware_state(file_path, state_values, control_values, signal_values)
+
+        # Use select to check for input
+        print("> ", end="", flush=True)
+        
+        # Monitor sys.stdin for input
+        readable, _, _ = select.select([sys.stdin], [], [], 100)
+        
+        if readable:
+            # Read the user input from stdin
+            user_input = sys.stdin.readline().strip()
+
+            # Exit if the user types "exit"
+            if user_input.lower() == "exit":
+                print("Exiting CLI.")
+                sys.exit(0)
+            
+            # If input is not empty, parse and execute
+            if user_input:
+                # Split the input into parts (e.g., ["set", "j", "k"])
+                parts = user_input.split(" ")
+
+                if parts[0].lower() == "set" and len(parts) == 3:
+                    # Handle the "set" command
+                    j = int(parts[1])
+                    k = int(parts[2])
+
+                    control_values[j - 1] = k
+                    write_hardware_state(file_path, state_values, control_values, signal_values)
+
+                    history.append(str(t) + " set " + str(j) + " " + str(k))
+
+                else:
+                    print("Invalid command or incorrect number of arguments.")
+            else:
+                print("Please enter a valid command.")
+        else:
+            # If no input, continue to the next iteration
+            continue
+
         # Write Your Code Here End
 
         time.sleep(1)  # Wait for 1 second before polling again
-    print(history)
+        print(history)
 
 if __name__ == '__main__':
     main()
